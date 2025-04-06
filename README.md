@@ -11,5 +11,5 @@ GEMINI_API_KEY=blabla
 
 
 ## DISCLAIMER
-I do not encourage cheating at all and I don't recommend anyone to use this. I made this just because I was curious on how interviewcoder works behind the scenes.
+I do not encourage cheating at all and I don't recommend anyone to use this. I made this just because I was curious about how interviewcoder works behind the scenes.
 I strictly despise cheating of all sorts and this project is just a curiosity project.
