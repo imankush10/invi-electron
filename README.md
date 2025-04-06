@@ -8,3 +8,8 @@ GEMINI_API_KEY=blabla
 # Screen Shared screen
 
 ![Screenshot 2025-04-06 122347](https://github.com/user-attachments/assets/aa7917a0-ffd8-4cf3-8f58-c2e503950139)
+
+
+## DISCLAIMER
+I do not encourage cheating at all and I don't recommend anyone to use this. I made this just because I was curious on how interviewcoder works behind the scenes.
+I strictly despise cheating of all sorts and this project is just a curiosity project.
