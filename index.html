@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Ghost AI</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify/dist/purify.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <div class="header draggable">
+      <div class="drag-handle">⚪</div>
+      <div class="controls">
+        <button class="minimize" onclick="window.electronAPI.minimizeWindow()">─</button>
+        <button class="close" onclick="window.electronAPI.closeWindow()">✕</button>
+      </div>
+    </div>
+
+    <div class="chat-container">
+      <div id="chat-messages"></div>
+      <div class="input-container">
+        <input type="text" id="user-input" placeholder="Ask me anything...">
+        <button id="send-btn" onclick="sendMessage()">➤</button>
+      </div>
+    </div>
+
+    <div class="opacity-display">Opacity: <span id="opacity-value">85%</span></div>
+  </div>
+
+  <script>
+    let isDragging = false;
+    let startX, startY;
+
+    document.querySelector('.draggable').addEventListener('mousedown', (e) => {
+      isDragging = true;
+      startX = e.clientX;
+      startY = e.clientY;
+    });
+
+    document.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+      const deltaX = e.clientX - startX;
+      const deltaY = e.clientY - startY;
+      window.electronAPI.updateDrag(deltaX, deltaY);
+      startX = e.clientX;
+      startY = e.clientY;
+    });
+
+    document.addEventListener('mouseup', () => {
+      isDragging = false;
+    });
+
+    async function sendMessage() {
+      const input = document.getElementById('user-input');
+      const messages = document.getElementById('chat-messages');
+      const prompt = input.value;
+      input.value = '';
+
+      messages.innerHTML += `<div class="message user">${prompt}</div>`;
+      
+      const aiMessageDiv = document.createElement('div');
+      aiMessageDiv.className = 'message ai';
+      const responseDiv = document.createElement('div');
+      responseDiv.className = 'response';
+      aiMessageDiv.appendChild(responseDiv);
+      messages.appendChild(aiMessageDiv);
+
+      try {
+        const response = await window.electronAPI.sendToGemini(prompt);
+        
+        if (response.success) {
+          let accumulatedText = '';
+          const textChunks = response.text.split(' ');
+          
+          for (const chunk of textChunks) {
+            accumulatedText += chunk + ' ';
+            const sanitized = DOMPurify.sanitize(marked.parse(accumulatedText));
+            responseDiv.innerHTML = sanitized;
+            messages.scrollTop = messages.scrollHeight;
+            await new Promise(resolve => setTimeout(resolve, 50));
+          }
+        } else {
+          responseDiv.innerHTML = `<div class="error">${response.text}</div>`;
+        }
+      } catch (error) {
+        responseDiv.innerHTML = `<div class="error">Connection error: ${error.message}</div>`;
+      }
+    }
+
+    window.electronAPI.onOpacityUpdate((_, opacity) => {
+      document.getElementById('opacity-value').textContent = 
+        `${Math.round(opacity * 100)}%`;
+    });
+
+    document.getElementById('user-input').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') sendMessage();
+    });
+  </script>
+</body>
+</html>

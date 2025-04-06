@@ -1,0 +1,17 @@
+{
+  "name": "invi-electron",
+  "main": "main.js",
+  "build": {
+    "asar": false
+  },
+  "scripts": {
+    "start": "electron ."
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.24.0",
+    "dotenv": "^16.4.7",
+    "electron": "20.3.8",
+    "headers-polyfill": "^4.0.3",
+    "node-fetch": "2"
+  }
+}
